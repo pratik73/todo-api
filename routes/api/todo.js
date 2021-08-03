@@ -1,101 +1,102 @@
-const express = require('express');
-const { validationResult } = require('express-validator');
+const express = require("express");
+const { check, validationResult } = require("express-validator");
 const router = express.Router();
 const auth = require("../../middleware/auth");
+const Todo = require("../../models/Todo");
 
 // @route GET api/todo/me
 // @desc Get current users todos
 // @access Private
-router.get("/me", auth, async (req, res) =>{
-    try {
-        const todo = await Todo.findOne({
-            user: req.user.id,
-        }).populate("user", ["name", "avatar"]);
+router.get("/me", auth, async (req, res) => {
+  try {
+    const todo = await Todo.findOne({
+      user: req.user.id,
+    }).populate("user", ["name", "avatar"]);
 
-        if(!todo){
-            return res.status(400).json({msg: "There are no todos for this user"});
-        }
-        res.json(todo);
-    } catch (err) {
-        console.log(err.message);
-        res.status(500).send("Internal Server Error");
-    }    
-    res.json({msg:"Incomplete Implementation"});
+    if (!todo) {
+      return res.status(400).json({ msg: "There are no todos for this user" });
+    }
+    res.json(todo);
+  } catch (err) {
+    console.log(err.message);
+    res.status(500).send("Internal Server Error");
+  }
+  res.json({ msg: "Incomplete Implementation" });
 });
 
 // @route POST api/todo
 // @desc Create or update a todo
 // @access Private
-router.post("/", [
+router.post(
+  "/",
+  [
     auth,
     [
-        check("category", "Category is required").not().isEmpty(),
-        check("title", "Title is required").not().isEmpty()
+      check("category", "Category is required").not().isEmpty(),
+      check("title", "Title is required").not().isEmpty(),
     ],
-],
-async (req, res) =>{
-
+  ],
+  async (req, res) => {
     const errors = validationResult(req);
 
-    if(!errors.isEmpty()){
-      return res.status(400).json({errors: errors.array()});
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
     }
     try {
-        const { title, category, status, priority, labels} = req.body;
+      const { title, category, status, priority, labels } = req.body;
 
-        const todoFields = {title, category};
-        if(status) todoFields.status = status;
-        if(priority) todoFields.priority = priority;
-        if(labels) {
-            todoFields.labels = Array.isArray(labels) ? labels: labels.split(",").map((label) => label.trim());
-        } 
+      const todoFields = { title, category };
+      if (status) todoFields.status = status;
+      if (priority) todoFields.priority = priority;
+      if (labels) {
+        todoFields.labels = Array.isArray(labels)
+          ? labels
+          : labels.split(",").map((label) => label.trim());
+      }
 
-        let todo = await Todo.findOne({ user: req.user.id });
-        if(todo){
-            todo = await Todo.findOneAndUpdate(
-                { user: req.user.id}, 
-                { $set: todoFileds},
-                { new: true}
-            );
+      let todo = await Todo.findOne({ user: req.user.id });
+      if (todo) {
+        todo = await Todo.findOneAndUpdate(
+          { user: req.user.id },
+          { $set: todoFileds },
+          { new: true }
+        );
 
-            return res.json(todo);
-        }
-
-        todo = new Todo (todoFields);
-        await todo.save();
         return res.json(todo);
+      }
 
-    }catch (err) {
-        console.log(err.message);
-        res.status(500).send("Internal Server Error");
-    } 
-    return res.send({ msg:"Incomplete Implementation"});
-});
+      todo = new Todo(todoFields);
+      await todo.save();
+      return res.json(todo);
+    } catch (err) {
+      console.log(err.message);
+      res.status(500).send("Internal Server Error");
+    }
+  }
+);
 
 // @route GET api/todo
 // @desc Get all todos
 // @access Public
-router.get("/", async (req, res) =>{
-    try {
-        
-    } catch (err) {
-        console.log(err.message);
-        res.status(500).send("Internal Server Error");
-    } 
-    return res.send({msg:"Incomplete Implementation"});
+router.get("/", async (req, res) => {
+  try {
+  } catch (err) {
+    console.log(err.message);
+    res.status(500).send("Internal Server Error");
+  }
+  return res.send({ msg: "Incomplete Implementation" });
 });
 
 // @route DELETE api/todo
 // @desc Delete todo, user
 // @access Private
-router.delete("/:id", auth, async (req, res) =>{
-    try {
-        
-    } catch (err) {
-        console.log(err.message);
-        res.status(500).send("Internal Server Error");
-    } 
-    return res.send({msg:"Incomplete Implementation"});
+router.delete("/:id", auth, async (req, res) => {
+  try {
+  } catch (err) {
+    console.log(err.message);
+    res.status(500).send("Internal Server Error");
+  }
+  return res.send({ msg: "Incomplete Implementation" });
 });
 
 module.exports = router;

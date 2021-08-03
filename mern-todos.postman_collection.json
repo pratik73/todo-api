@@ -1,0 +1,289 @@
+{
+	"info": {
+		"_postman_id": "6b1c3516-f4f0-4fc4-8c6f-e2bee4363295",
+		"name": "mern-todos",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "register-user",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Patrick Doe\",\r\n    \"email\": \"pat@gmail.com\",\r\n    \"password\": \"ibnnBf.8D2ap6YH\"\r\n}"
+				},
+				"url": {
+					"raw": "http://localhost:5002/api/users",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5002",
+					"path": [
+						"api",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create-update-todo",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const options = {\r",
+							"    url: \"http://localhost:5002/api/auth\",\r",
+							"    method: 'POST',\r",
+							"    header: { 'content-type': 'application/json' },\r",
+							"    body: {\r",
+							"        mode: 'raw',\r",
+							"        raw: JSON.stringify({\r",
+							"            \"email\": \"dheepika@gmail.com\",\r",
+							"            \"password\": \"dheepika\"\r",
+							"        })\r",
+							"\r",
+							"    }\r",
+							"};\r",
+							"\r",
+							"pm.sendRequest(options, function (err, res) {\r",
+							"    var jsonData = res.json();\r",
+							"    if (err) {\r",
+							"        console.log(err);\r",
+							"    }\r",
+							"    else {\r",
+							"        pm.environment.set(\"token\", jsonData.token);\r",
+							"    }\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "x-auth-token",
+						"value": "{{token}}",
+						"description": "Patrick's token",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"title\": \"todo-1\",\r\n    \"status\": \"Not Active\",\r\n    \"category\": \"health\",\r\n    \"priority\": \"very high\",\r\n    \"labels\": \"HEALTH-2, ACTIVITY, DAILY\"\r\n}"
+				},
+				"url": {
+					"raw": "http://localhost:5002/api/todo",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5002",
+					"path": [
+						"api",
+						"todo"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get-my-todos",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const options = {\r",
+							"    url: \"http://localhost:5000/api/auth\",\r",
+							"    method: 'POST',\r",
+							"    header: { 'content-type': 'application/json' },\r",
+							"    body: {\r",
+							"        mode: 'raw',\r",
+							"        raw: JSON.stringify({\r",
+							"            \"email\": pm.collectionVariables.get(\"email\"),\r",
+							"            \"password\": pm.collectionVariables.get(\"password\")\r",
+							"        })\r",
+							"\r",
+							"    }\r",
+							"};\r",
+							"\r",
+							"pm.sendRequest(options, function (err, res) {\r",
+							"    var jsonData = res.json();\r",
+							"    if (err) {\r",
+							"        console.log(err);\r",
+							"    }\r",
+							"    else {\r",
+							"        pm.environment.set(\"token\", jsonData.token);\r",
+							"    }\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-auth-token",
+						"value": "{{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:5000/api/todo/me",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"todo",
+						"me"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get-all-todos",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/api/todo",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"todo"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete-todo",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const options = {\r",
+							"    url: \"http://localhost:5000/api/auth\",\r",
+							"    method: 'POST',\r",
+							"    header: { 'content-type': 'application/json' },\r",
+							"    body: {\r",
+							"        mode: 'raw',\r",
+							"        raw: JSON.stringify({\r",
+							"            \"email\": pm.collectionVariables.get(\"email\"),\r",
+							"            \"password\": pm.collectionVariables.get(\"password\")\r",
+							"        })\r",
+							"\r",
+							"    }\r",
+							"};\r",
+							"\r",
+							"pm.sendRequest(options, function (err, res) {\r",
+							"    var jsonData = res.json();\r",
+							"    if (err) {\r",
+							"        console.log(err);\r",
+							"    }\r",
+							"    else {\r",
+							"        pm.environment.set(\"token\", jsonData.token);\r",
+							"    }\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "x-auth-token",
+						"value": "{{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:5000/api/todo/6101b8ef228882c95c99ee93",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"todo",
+						"6101b8ef228882c95c99ee93"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "email",
+			"value": "pat@gmail.com"
+		},
+		{
+			"key": "password",
+			"value": "ibnnBf.8D2ap6YH"
+		}
+	]
+}
